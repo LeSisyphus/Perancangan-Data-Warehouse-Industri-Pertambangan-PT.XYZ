@@ -17,11 +17,12 @@ services:
       - ./data:/data
       - ./init-scripts:/init-scripts
       - ./misi3:/scripts
+      - ./tests:/tests
     networks:
       - dw_network
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P 'PTXYZSecure123!' -Q 'SELECT 1' -C -N"]
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -C -N"]
       interval: 30s
       timeout: 10s
       retries: 10

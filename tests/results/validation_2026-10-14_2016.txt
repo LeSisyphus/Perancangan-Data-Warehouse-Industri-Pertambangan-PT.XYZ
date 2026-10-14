@@ -1,0 +1,4 @@
+Changed database context to 'PTXYZ_DataWarehouse'.
+Msg 220, Level 16, State 2, Server sqlserver, Line 3
+Arithmetic overflow error for data type tinyint, value = -1.
+The statement has been terminated.

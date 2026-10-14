@@ -11,12 +11,16 @@ import logging
 import time
 import os
 
+DATA_DIR = os.environ.get('DATA_DIR', 'data')
+LOG_DIR = os.path.join(DATA_DIR, 'logs')
+os.makedirs(LOG_DIR, exist_ok=True)
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('etl_execution.log'),
+        logging.FileHandler(os.path.join(LOG_DIR, 'etl_execution.log'), mode='w', encoding='utf-8'),
         logging.StreamHandler()
     ]
 )
@@ -25,13 +29,13 @@ def get_sql_connection():
     """Create SQL Server connection"""
     try:
         conn = pymssql.connect(
-            server='localhost',
-            port=1433,
-            database='PTXYZ_DataWarehouse',
-            user='sa',
-            password='PTXYZSecure123!',
-            timeout=30
-        )
+        server=os.environ.get('MSSQL_HOST', 'localhost'),
+        port=int(os.environ.get('MSSQL_PORT', 1433)),
+        database='PTXYZ_DataWarehouse',
+        user='sa',
+        password=os.environ['MSSQL_SA_PASSWORD'],
+        timeout=0
+)
         return conn
     except Exception as e:
         logging.error(f"Error connecting to SQL Server: {str(e)}")
@@ -51,7 +55,7 @@ def extract_and_load_to_staging():
         
         # Load Equipment Usage data
         logging.info("Loading Equipment Usage data...")
-        equipment_df = pd.read_csv('data/raw/Dataset/dataset_alat_berat_dw.csv')
+        equipment_df = pd.read_csv(os.path.join(DATA_DIR, 'dataset_alat_berat_dw.csv'))
         equipment_df['purchase_date'] = pd.to_datetime(equipment_df['purchase_date']).dt.date
         equipment_df['date'] = pd.to_datetime(equipment_df['date']).dt.date
         equipment_df['created_at'] = pd.to_datetime(equipment_df['created_at'])
@@ -75,7 +79,7 @@ def extract_and_load_to_staging():
         
         # Load Production data
         logging.info("Loading Production data...")
-        production_df = pd.read_csv('data/raw/Dataset/dataset_production.csv')
+        production_df = pd.read_csv(os.path.join(DATA_DIR, 'dataset_production.csv'))
         production_df['date'] = pd.to_datetime(production_df['date']).dt.date
         production_df['hire_date'] = pd.to_datetime(production_df['hire_date']).dt.date
         
@@ -98,7 +102,7 @@ def extract_and_load_to_staging():
         
         # Load Financial Transaction data
         logging.info("Loading Financial Transaction data...")
-        transaction_df = pd.read_csv('data/raw/Dataset/dataset_transaksi.csv')
+        transaction_df = pd.read_csv(os.path.join(DATA_DIR, 'dataset_transaksi.csv'))
         transaction_df['created_at'] = pd.to_datetime(transaction_df['created_at'])
         transaction_df['date'] = pd.to_datetime(transaction_df['date'], format='%Y%m%d').dt.date
         transaction_df['start_date'] = pd.to_datetime(transaction_df['start_date']).dt.date

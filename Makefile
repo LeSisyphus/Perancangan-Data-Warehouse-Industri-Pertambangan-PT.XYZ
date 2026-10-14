@@ -98,3 +98,26 @@ shell-sql:
 monitor:
 	@echo "Monitoring PT XYZ Data Warehouse services..."
 	watch docker compose ps
+
+.PHONY: repro repro-clean repro-up repro-init repro-etl repro-test
+
+repro: repro-clean repro-up repro-init repro-etl repro-test
+
+repro-clean:
+	docker compose down -v --remove-orphans
+
+repro-up:
+	docker compose up -d sqlserver db_init
+
+repro-init:
+	@until [ "$$(docker inspect -f '{{.State.Health.Status}}' ptxyz_sqlserver)" = "healthy" ]; do echo "menunggu sqlserver..."; sleep 5; done
+	@test "$$(docker wait ptxyz_db_init)" = "0" || (echo "db_init gagal"; exit 1)
+
+repro-etl:
+	docker compose run --rm --no-deps \
+	  -v "$(CURDIR)/standalone_etl.py:/opt/airflow/standalone_etl.py" \
+	  -e MSSQL_HOST=sqlserver -e DATA_DIR=/opt/airflow/data \
+	  -w /opt/airflow --entrypoint python airflow-worker standalone_etl.py
+
+repro-test:
+	bash tests/run_validation.sh

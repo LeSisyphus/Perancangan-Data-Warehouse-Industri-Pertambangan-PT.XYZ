@@ -1,0 +1,29 @@
+Changed database context to 'PTXYZ_DataWarehouse'.
+Warning: Null value is eliminated by an aggregate or other SET operation.
+kategori pengujian diharapkan hasil status
+-------- --------- ---------- ----- ------
+SKEMA kolom hilang / tipe berbeda 0 0 PASS
+SKEMA kolom tambahan di dim/fact 0 0 PASS
+BARIS dim.DimTime 830 830 PASS
+BARIS dim.DimSite 1747 1747 PASS
+BARIS dim.DimEquipment 6 6 PASS
+BARIS dim.DimMaterial 5 5 PASS
+BARIS dim.DimEmployee 10 10 PASS
+BARIS dim.DimShift 3 3 PASS
+BARIS dim.DimProject 50 50 PASS
+BARIS dim.DimAccount 30 30 PASS
+BARIS fact.FactEquipmentUsage 236892 236892 PASS
+BARIS fact.FactProduction 2261 2261 PASS
+BARIS fact.FactFinancialTransaction 115901 115901 PASS
+FK jumlah FK di tabel fakta 12 12 PASS
+FK FK nonaktif / not trusted 0 0 PASS
+FK baris fakta orphan (semua FK) 0 0 PASS
+AGREGAT produksi Metal (date >= 2025-05-01) 434721 434721.00 PASS
+AGREGAT produksi Ore (date >= 2025-05-01) 112687 112687.00 PASS
+AGREGAT efisiensi % (date >= 2025-05-22) 95.66 95.66 PASS
+DQ DimSite: baris vs site_name unik info 1747 vs 26 INFO
+DQ FactEquipmentUsage: baris vs ID sumber unik info 236892 vs 1150 INFO
+DQ nilai negatif (jam/volume/biaya) 0 0 PASS
+lulus gagal catatan
+----- ----- -------
+20 0 2
